@@ -1,5 +1,8 @@
 *~
 *.o
+*.objdump
+[branch,fib,forward,loaduse,sum100].[o,objdump]
+asm/Makefile
 *.swp
 __pycache__
 */__pycache__
