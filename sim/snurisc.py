@@ -51,9 +51,10 @@ class SNURISC(object):
         self.regs   = RegisterFile()
         self.imem   = Memory(IMEM_START, IMEM_SIZE, WORD_SIZE)
         self.dmem   = Memory(DMEM_START, DMEM_SIZE, WORD_SIZE)
+        # cpu clock jakoś zdefiniować tutaj?
 
     def run(self, entry_point):
-        Sim.run(self, entry_point)
+        return Sim.run(self, entry_point)
 
 
 #--------------------------------------------------------------------------

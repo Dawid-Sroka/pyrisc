@@ -31,7 +31,7 @@ ASLFAGS     = -march=rv32i -mabi=ilp32 -static
 LDFLAGS     = -T./link.ld -nostdlib -nostartfiles
 OBJDFLAGS   = -D --section=.text --section=.data
 
-TARGET      = fib sum100 loaduse forward branch
+TARGET      = fib sum100 loaduse forward branch myprog
 ASRCS       = fib.s sum100.s loaduse.s forward.s branch.s
 OBJS        = $(ASRCS:.s=.o)
 DUMPS       = $(ASRCS:.s=.objdump)

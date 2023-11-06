@@ -68,6 +68,9 @@ class Sim(object):
             if Log.level > 1 and Log.level < 6:
                 Sim.cpu.dmem.dump(skipzero = True)
 
+        if (status & EXC_EBREAK):
+            return EXC_EBREAK
+
     @staticmethod
     def log(pc, inst, rd, wbdata, pc_next):
 
