@@ -161,10 +161,12 @@ EXC_IMEM_ERROR      = 1
 EXC_DMEM_ERROR      = 2
 EXC_ILLEGAL_INST    = 4
 EXC_EBREAK          = 8
+EXC_CLOCK           = 16        ## przerwanie zegarowe
 
 EXC_MSG = {         EXC_IMEM_ERROR:     "imem access error", 
                     EXC_DMEM_ERROR:     "dmem access error",
                     EXC_ILLEGAL_INST:   "illegal instruction",
                     EXC_EBREAK:         "ebreak",
+                    EXC_CLOCK:          "clock interrupt",
 }
 

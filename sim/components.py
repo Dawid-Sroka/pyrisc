@@ -129,5 +129,15 @@ class Memory(object):
             if (not skipzero) or (val != 0):
                 print("0x%08x: " % a, ' '.join("%02x" % ((val >> i) & 0xff) for i in [0, 8, 16, 24]), " (0x%08x)" % val)
 
+#--------------------------------------------------------------------------
+#   Clock: models a cpu clock
+#--------------------------------------------------------------------------
+
+class Clock(object):
+
+    def __init__(self):
+        self.cycles = 0
+        ## period - how often clock interrupt occurs 
+        self.period = 500
 
 

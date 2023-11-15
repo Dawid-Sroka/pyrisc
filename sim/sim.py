@@ -29,14 +29,23 @@ from program import *
 class Sim(object):
 
     @staticmethod
+    # ta procedura będzie przyjmować ca
     def run(cpu, entry_point):
 
-        Sim.cpu = cpu
+        Sim.cpu = cpu # ta linijka potrzebna?
         Sim.cpu.pc.write(entry_point)
+        ## jakoś uruchom cpu clock tutaj?
 
         while True:
             # Execute a single instruction
             status = Sim.single_step()
+            
+            Sim.cpu.clock.cycles += 1
+            if (Sim.cpu.clock.cycles > Sim.cpu.clock.period):
+                Sim.cpu.clock.cycles = 0
+                ## Tutaj pewnie chcemy zwrócić coś
+                ## status = ?? 
+                return EXC_CLOCK
 
             # Update stats
             Stat.cycle      += 1
@@ -51,6 +60,9 @@ class Sim(object):
             if not status == EXC_NONE:
                 break
       
+        ## Może poniższe dwie sekcje należy zamienić miejscami?
+        ## Wtedy na końcu możemy robić 'Handle exceptions' i zwracać różne wartości
+
         # Handle exceptions, if any
         if (status & EXC_DMEM_ERROR):
             print("Exception '%s' occurred at 0x%08x -- Program terminated" % (EXC_MSG[EXC_DMEM_ERROR], Sim.cpu.pc.read()))
@@ -68,6 +80,7 @@ class Sim(object):
             if Log.level > 1 and Log.level < 6:
                 Sim.cpu.dmem.dump(skipzero = True)
 
+        ## Jeśli był syscall to chcemy to jakoś zwrócić.
         if (status & EXC_EBREAK):
             return EXC_EBREAK
 
