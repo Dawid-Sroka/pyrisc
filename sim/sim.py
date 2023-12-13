@@ -80,9 +80,7 @@ class Sim(object):
             if Log.level > 1 and Log.level < 6:
                 Sim.cpu.dmem.dump(skipzero = True)
 
-        ## Jeśli był syscall to chcemy to jakoś zwrócić.
-        if (status & EXC_EBREAK):
-            return EXC_EBREAK
+        return status
 
     @staticmethod
     def log(pc, inst, rd, wbdata, pc_next):
@@ -182,7 +180,10 @@ class Sim(object):
 
         if inst in [ EBREAK, ECALL ]:
             Sim.log(pc, inst, 0, 0, 0) 
-            return EXC_EBREAK
+            if (inst == EBREAK): 
+                return EXC_EBREAK
+            else:
+                return EXC_ECALL
 
         rs1             = RISCV.rs1(inst)
         rs2             = RISCV.rs2(inst)
