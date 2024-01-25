@@ -15,9 +15,9 @@
 
 
 from elftools.elf import elffile as elf
-from consts import *
-from isa import *
-from components import *
+from pyrisc.sim.consts import *
+from pyrisc.sim.isa import *
+from pyrisc.sim.components import *
 
 
 #--------------------------------------------------------------------------

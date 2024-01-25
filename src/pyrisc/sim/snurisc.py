@@ -17,11 +17,11 @@
 
 import sys
 
-from consts import *
-from isa import *
-from components import *
-from program import *
-from sim import *
+from pyrisc.sim.consts import *
+from pyrisc.sim.isa import *
+from pyrisc.sim.components import *
+from pyrisc.sim.program import *
+from pyrisc.sim.sim import *
 
 
 #--------------------------------------------------------------------------

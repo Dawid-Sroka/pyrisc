@@ -14,8 +14,8 @@
 #==========================================================================
 
 
-from consts import *
-from isa import *
+from pyrisc.sim.consts import *
+from pyrisc.sim.isa import *
 
 
 #--------------------------------------------------------------------------
