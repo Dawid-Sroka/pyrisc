@@ -88,12 +88,12 @@ class Sim(object):
         if Stat.cycle < Log.start_cycle:
             return
         if Log.level >= 4:
-            info = "# R[%d] <- 0x%08x, pc_next=0x%08x" % (rd, wbdata, pc_next) if rd else \
-                   "# pc_next=0x%08x" % pc_next
+            info = "# R[%2d] <- 0x%08x, pc_next=0x%08x" % (rd, wbdata, pc_next) if rd else \
+                   "# " + 21*" " + "pc_next=0x%08x" % pc_next
         else:
             info = ''
         if Log.level >= 3:
-            print("%d 0x%08x: %-30s%-s" % (Stat.cycle, pc, Program.disasm(pc, inst), info))
+            print("%3d 0x%08x: %-30s%-s" % (Stat.cycle, pc, Program.disasm(pc, inst), info))
         else:
             return
 
