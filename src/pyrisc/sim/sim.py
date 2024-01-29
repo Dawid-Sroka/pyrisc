@@ -205,6 +205,7 @@ class Sim(object):
                                                 (opcode == BGEU and not (WORD(rs1_data) < WORD(rs2_data)))  else \
                           (rs1_data + imm_i) & WORD(0xfffffffe)     if opcode == JALR   else                     \
                           pc_plus4
+        pc_next = WORD(pc_next)
 
         if (opcode in [ JAL, JALR ]):
             Sim.cpu.regs.write(rd, pc_plus4)
