@@ -183,6 +183,8 @@ class Sim(object):
             if (inst == EBREAK): 
                 return EXC_EBREAK
             else:
+                pc_next     = pc + 4
+                Sim.cpu.pc.write(pc_next)
                 return EXC_ECALL
 
         rs1             = RISCV.rs1(inst)
