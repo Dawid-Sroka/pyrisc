@@ -64,7 +64,7 @@ class Program(object):
     def check_elf(self, filename, header):
         e_ident = header['e_ident']
 
-        # This is already checked during ELFFile() 
+        # This is already checked during ELFFile()
         '''
         if bytes(e_ident['EI_MAG']) != b'\x7fELF':
             print("File %s is not an ELF file" % filename)
@@ -88,7 +88,7 @@ class Program(object):
         try:
             f = open(filename, 'rb')
         except IOError:
-            print(ELF_ERR_MSG[ELF_ERR_OPEN] % filename) 
+            print(ELF_ERR_MSG[ELF_ERR_OPEN] % filename)
             return WORD(0)
 
         with f:
@@ -100,7 +100,7 @@ class Program(object):
                 return WORD(0)
 
             entry_point = WORD(efh['e_entry'])
-            
+
             for seg in ef.iter_segments():
                 addr = seg.header['p_vaddr']
                 memsz = seg.header['p_memsz']
@@ -120,7 +120,7 @@ class Program(object):
                     mem.access(True, addr, c, M_XWR)
                     addr += WORD_SIZE
             return entry_point
-                   
+
     @staticmethod
     def disasm(pc, inst):
 
@@ -209,5 +209,3 @@ class Stat(object):
         print("Data transfer:    %d instructions (%.2f%%)" % (Stat.inst_mem, 0.0 if Stat.icount == 0 else Stat.inst_mem * 100.0 / Stat.icount))
         print("ALU operation:    %d instructions (%.2f%%)" % (Stat.inst_alu, 0.0 if Stat.icount == 0 else Stat.inst_alu * 100.0 / Stat.icount))
         print("Control transfer: %d instructions (%.2f%%)" % (Stat.inst_ctrl, 0.0 if Stat.icount == 0 else Stat.inst_ctrl * 100.0 / Stat.icount))
-
-

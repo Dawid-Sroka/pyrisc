@@ -23,11 +23,11 @@ from isa import *
 #--------------------------------------------------------------------------
 
 # Symbolic register names
-rname =  [ 
+rname =  [
             'zero', 'ra',  'sp',  'gp',  'tp',  't0',  't1',  't2',
             's0',   's1',  'a0',  'a1',  'a2',  'a3',  'a4',  'a5',
             'a6',   'a7',  's2',  's3',  's4',  's5',  's6',  's7',
-            's8',   's9',  's10', 's11', 't3',  't4',  't5',  't6' 
+            's8',   's9',  's10', 's11', 't3',  't4',  't5',  't6'
         ]
 
 
@@ -102,7 +102,7 @@ class Memory(object):
 
     def access(self, valid, addr, data, fcn):
 
-        if (not valid):                    
+        if (not valid):
             res = ( WORD(0), True )
         elif (addr < self.mem_start) or (addr >= self.mem_end) or \
             addr % self.word_size != 0:
@@ -111,7 +111,7 @@ class Memory(object):
             val = self.mem[(addr - self.mem_start) // self.word_size]
             res = ( val, True )
         elif fcn == M_XWR:
-            self.mem[(addr - self.mem_start) // self.word_size] = WORD(data) 
+            self.mem[(addr - self.mem_start) // self.word_size] = WORD(data)
             res = ( WORD(0), True )
         else:
             res = ( WORD(0), False )
@@ -186,5 +186,3 @@ class Adder(object):
     def op(self, operand1, operand2 = 4):
         np.seterr(all='ignore')
         return WORD(operand1 + operand2)
-
-

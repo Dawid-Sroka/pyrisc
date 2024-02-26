@@ -60,8 +60,8 @@ class Pipe(object):
     def run(entry_point):
         IF.reg_pc = entry_point
         while True:
-            # Run each stage 
-            # Should be run in the reverse order because forwarding and 
+            # Run each stage
+            # Should be run in the reverse order because forwarding and
             # hazard control logic depends on previous instructions
             Pipe.WB.compute()
             Pipe.MM.compute()
@@ -113,7 +113,7 @@ class Pipe(object):
                 Pipe.cpu.rf.dump()                      # dump register file
             if Log.level > 1 and Log.level < 7:
                 Pipe.cpu.dmem.dump(skipzero = True)     # dump dmem
-       
+
     # This function is called by each stage after updating its states
     @staticmethod
     def log(stage, pc, inst, info):
@@ -156,7 +156,7 @@ class IF(Pipe):
 
     def compute(self):
 
-        # Readout pipeline register values 
+        # Readout pipeline register values
         self.pc     = IF.reg_pc
 
         # Fetch an instruction from instruction memory (imem)
@@ -176,7 +176,7 @@ class IF(Pipe):
         self.pc_next =  self.pcplus4            if Pipe.CTL.pc_sel == PC_4      else \
                         Pipe.EX.brjmp_target    if Pipe.CTL.pc_sel == PC_BRJMP  else \
                         Pipe.EX.jump_reg_target if Pipe.CTL.pc_sel == PC_JALR   else \
-                        WORD(0)                 
+                        WORD(0)
 
 
     def update(self):
@@ -187,7 +187,7 @@ class IF(Pipe):
         if (Pipe.CTL.ID_bubble and Pipe.CTL.ID_stall):
             print("Assert failed: ID_bubble && ID_stall")
             sys.exit()
-        
+
         if Pipe.CTL.ID_bubble:
             ID.reg_pc           = self.pc
             ID.reg_inst         = WORD(BUBBLE)
@@ -419,18 +419,18 @@ class EX(Pipe):
         # we change the input of ALU to rs2_data.
         self.alu2_data  = self.rs2_data     if self.c_br_type in [ BR_NE, BR_EQ, BR_GE, BR_GEU, BR_LT, BR_LTU ] else \
                           self.op2_data
-        
+
         # Perform ALU operation
         self.alu_out = Pipe.cpu.alu.op(self.c_alu_fun, self.op1_data, self.alu2_data)
 
         # Adjust the output for jalr instruction (forwarded to IF)
-        self.jump_reg_target    = self.alu_out & WORD(0xfffffffe) 
+        self.jump_reg_target    = self.alu_out & WORD(0xfffffffe)
 
         # Calculate the branch/jump target address using an adder (forwarded to IF)
-        self.brjmp_target       = Pipe.cpu.adder_brtarget.op(self.pc, self.op2_data) 
+        self.brjmp_target       = Pipe.cpu.adder_brtarget.op(self.pc, self.op2_data)
 
         # For jal and jalr instructions, pc+4 should be written to the rd
-        if self.c_wb_sel == WB_PC4:                   
+        if self.c_wb_sel == WB_PC4:
             self.alu_out        = self.pcplus4
 
 
@@ -532,8 +532,8 @@ class MM(Pipe):
         self.c_wb_sel       = MM.reg_c_wb_sel
         self.c_dmem_en      = MM.reg_c_dmem_en
         self.c_dmem_rw      = MM.reg_c_dmem_rw
-        self.alu_out        = MM.reg_alu_out  
-        self.rs2_data       = MM.reg_rs2_data 
+        self.alu_out        = MM.reg_alu_out
+        self.rs2_data       = MM.reg_rs2_data
 
         # Access data memory (dmem) if needed
         mem_data, status = Pipe.cpu.dmem.access(self.c_dmem_en, self.alu_out, self.rs2_data, self.c_dmem_rw)
@@ -545,11 +545,11 @@ class MM(Pipe):
 
         # For load instruction, we need to store the value read from dmem
         self.wbdata         = mem_data          if self.c_wb_sel == WB_MEM  else \
-                              self.alu_out  
+                              self.alu_out
 
 
     def update(self):
-    
+
         WB.reg_pc           = self.pc
         WB.reg_inst         = self.inst
         WB.reg_exception    = self.exception
@@ -593,11 +593,11 @@ class WB(Pipe):
     def compute(self):
 
         # Readout pipeline register values
-        self.pc                 = WB.reg_pc    
-        self.inst               = WB.reg_inst  
-        self.exception          = WB.reg_exception      
-        self.rd                 = WB.reg_rd    
-        self.c_rf_wen           = WB.reg_c_rf_wen 
+        self.pc                 = WB.reg_pc
+        self.inst               = WB.reg_inst
+        self.exception          = WB.reg_exception
+        self.rd                 = WB.reg_rd
+        self.c_rf_wen           = WB.reg_c_rf_wen
         self.wbdata             = WB.reg_wbdata
 
 

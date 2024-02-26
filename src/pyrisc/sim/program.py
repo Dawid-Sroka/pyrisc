@@ -34,7 +34,7 @@ class AsmCache(object):
 
     def lookup(self, pc):
         # returns None if not found
-        return self.cache.get(pc)       
+        return self.cache.get(pc)
 
 
 #--------------------------------------------------------------------------
@@ -87,7 +87,7 @@ class Program(object):
         try:
             f = open(filename, 'rb')
         except IOError:
-            print(ELF_ERR_MSG[ELF_ERR_OPEN] % filename) 
+            print(ELF_ERR_MSG[ELF_ERR_OPEN] % filename)
             return WORD(0)
 
         with f:
@@ -99,7 +99,7 @@ class Program(object):
                 return WORD(0)
 
             entry_point = WORD(efh['e_entry'])
-            
+
             for seg in ef.iter_segments():
                 addr = seg.header['p_vaddr']
                 memsz = seg.header['p_memsz']
@@ -119,7 +119,7 @@ class Program(object):
                     mem.access(True, addr, c, M_XWR)
                     addr += WORD_SIZE
             return entry_point
-    
+
     @staticmethod
     def disasm(pc, inst):
 
@@ -182,7 +182,7 @@ class Program(object):
 #--------------------------------------------------------------------------
 
 class Log(object):
-   
+
     MAX_LOG_LEVEL   = 6
 
     level           = 1

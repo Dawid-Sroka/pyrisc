@@ -111,7 +111,7 @@ EBREAK_MASK = WORD(0b11111111111111111111111111111111)
 #   ISA table
 #--------------------------------------------------------------------------
 
-isa         = { 
+isa         = {
     LW      : [ "lw",       LW_MASK,    IL_TYPE, CL_MEM,  OP1_RS1, OP2_IMI, MEM_LD,   MT_W,  ],
     SW      : [ "sw",       SW_MASK,    S_TYPE,  CL_MEM,  OP1_RS1, OP2_IMS, MEM_ST,   MT_W,  ],
     AUIPC   : [ "auipc",    AUIPC_MASK, U_TYPE,  CL_ALU,  OP1_PC,  OP2_IMU, ALU_ADD,  MT_X,  ],
@@ -208,14 +208,14 @@ class RISCV(object):
     def imm_s(inst):
         imm     = ((inst >> 25) & 0x7f) << 5
         imm     |= ((inst >> 7) & 0x1f)
-        return RISCV.sign_extend(imm, 12) 
+        return RISCV.sign_extend(imm, 12)
 
     @staticmethod
     def imm_b(inst):
         imm     = (inst >> 31) << 11
         imm     |= ((inst >> 7) & 1) << 10
         imm     |= ((inst >> 25) & 0x3f) << 4
-        imm     |= (inst >> 8) & 0xf 
+        imm     |= (inst >> 8) & 0xf
         imm     = imm << 1
         return RISCV.sign_extend(imm, 13)
 
@@ -227,6 +227,3 @@ class RISCV(object):
         imm     |= (inst >> 21) & 0x3ff
         imm     = imm << 1
         return RISCV.sign_extend(imm, 21)
-
-
-

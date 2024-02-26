@@ -29,7 +29,7 @@ for i in range(5):
     # Oprócz tego pewnie get_context i create_context
     cpu_status = cpu.run(entry_point)
     print(EXC_MSG[cpu_status])
-    
+
     if (cpu_status == EXC_EBREAK):
         # Najpierw chcemy dodać proste syscalle. Najpierw exit
         # Potem jakiś prosty read i write na standarwe wyjście i wejście
@@ -39,5 +39,3 @@ for i in range(5):
         # Patrzymy czy minął kwant czasu, czy zwykle przerwanie
         # jakaś akcja schedulera
         continue
-
-

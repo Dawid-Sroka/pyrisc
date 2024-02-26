@@ -52,7 +52,7 @@ csignals = {
     SRA    : [ Y, BR_N  , OP1_RS1, OP2_RS2, OEN_1, OEN_1, ALU_SRA  , WB_ALU, REN_1, MEN_0, M_X  , MT_X, ],
     OR     : [ Y, BR_N  , OP1_RS1, OP2_RS2, OEN_1, OEN_1, ALU_OR   , WB_ALU, REN_1, MEN_0, M_X  , MT_X, ],
     AND    : [ Y, BR_N  , OP1_RS1, OP2_RS2, OEN_1, OEN_1, ALU_AND  , WB_ALU, REN_1, MEN_0, M_X  , MT_X, ],
-    JALR   : [ Y, BR_JR , OP1_RS1, OP2_IMI, OEN_1, OEN_0, ALU_ADD  , WB_PC4, REN_1, MEN_0, M_X  , MT_X, ],   
+    JALR   : [ Y, BR_JR , OP1_RS1, OP2_IMI, OEN_1, OEN_0, ALU_ADD  , WB_PC4, REN_1, MEN_0, M_X  , MT_X, ],
     JAL    : [ Y, BR_J  , OP1_X  , OP2_IMJ, OEN_0, OEN_0, ALU_X    , WB_PC4, REN_1, MEN_0, M_X  , MT_X, ],
 
     BEQ    : [ Y, BR_EQ , OP1_RS1, OP2_IMB, OEN_1, OEN_1, ALU_SEQ  , WB_X  , REN_0, MEN_0, M_X  , MT_X, ],
@@ -120,7 +120,7 @@ class Control(object):
         self.ID_stall       = False
         self.ID_bubble      = False
         self.EX_bubble      = False
-        self.MM_bubble      = False     
+        self.MM_bubble      = False
 
         cs = csignals[opcode]
 
@@ -191,18 +191,18 @@ class Control(object):
 
         # For load-use hazard, ID and IF are stalled for one cycle (and EX bubbled)
         # For mispredicted branches, instructions in ID and IF should be cancelled (become BUBBLE)
-        self.IF_stall       = load_use_hazard 
+        self.IF_stall       = load_use_hazard
         self.ID_stall       = load_use_hazard
-        self.ID_bubble      = EX_brjmp 
+        self.ID_bubble      = EX_brjmp
         self.EX_bubble      = load_use_hazard or EX_brjmp
 
-        # Any instruction with an exception becomes BUBBLE as it enters the MM stage. 
-        # This is because the instruction can be cancelled while it is in IF and ID due to mispredicted 
-        # branch/jump, in which case it should not cause any exception. We just keep track of the exception 
-        # state with the instruction along the pipeline until EX. If the instruction survives EX, it is 
+        # Any instruction with an exception becomes BUBBLE as it enters the MM stage.
+        # This is because the instruction can be cancelled while it is in IF and ID due to mispredicted
+        # branch/jump, in which case it should not cause any exception. We just keep track of the exception
+        # state with the instruction along the pipeline until EX. If the instruction survives EX, it is
         # safe to make the instruction and any following instructions bubble (except for EBREAK)
         self.MM_bubble = (Pipe.EX.exception and (Pipe.EX.exception != EXC_EBREAK)) or (Pipe.MM.exception)
-       
+
         if inst == BUBBLE:
             return False
         else:

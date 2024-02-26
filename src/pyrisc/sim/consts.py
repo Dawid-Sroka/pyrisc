@@ -102,7 +102,7 @@ CL_CTRL             = 2
 #--------------------------------------------------------------------------
 
 OP1_X               = 0
-OP1_RS1             = 1         
+OP1_RS1             = 1
 OP1_PC              = 2
 
 
@@ -111,9 +111,9 @@ OP1_PC              = 2
 #--------------------------------------------------------------------------
 
 OP2_X               = 0
-OP2_RS2             = 1         
-OP2_IMI             = 2         
-OP2_IMS             = 3         
+OP2_RS2             = 1
+OP2_IMI             = 2
+OP2_IMS             = 3
 OP2_IMU             = 4
 OP2_IMJ             = 5
 OP2_IMB             = 6
@@ -164,11 +164,10 @@ EXC_EBREAK          = 8
 EXC_ECALL           = 16        ## ? takie są exception codes na riscv?
 EXC_CLOCK           = 32        ## przerwanie zegarowe
 
-EXC_MSG = {         EXC_IMEM_ERROR:     "imem access error", 
+EXC_MSG = {         EXC_IMEM_ERROR:     "imem access error",
                     EXC_DMEM_ERROR:     "dmem access error",
                     EXC_ILLEGAL_INST:   "illegal instruction",
                     EXC_EBREAK:         "ebreak",
                     EXC_ECALL:          "syscall",
                     EXC_CLOCK:          "clock interrupt",
 }
-

@@ -33,7 +33,7 @@ from pyrisc.sim.sim import *
 #   DMEM: 0x80010000 - 0x8001ffff (64KB)
 
 IMEM_START  = WORD(0x80000000)      # IMEM: 0x80000000 - 0x8000ffff (64KB)
-IMEM_SIZE   = WORD(64 * 1024)       
+IMEM_SIZE   = WORD(64 * 1024)
 DMEM_START  = WORD(0x80010000)      # DMEM: 0x80010000 - 0x8001ffff (64KB)
 DMEM_SIZE   = WORD(64 * 1024)
 
@@ -136,5 +136,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-
-

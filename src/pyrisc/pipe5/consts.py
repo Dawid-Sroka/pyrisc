@@ -219,7 +219,7 @@ M_X                 = 0
 #   csignal[CS_MSK_SEL]: Memory mask type select signal
 #--------------------------------------------------------------------------
 
-MT_X                = 0         
+MT_X                = 0
 MT_B                = 1         # byte
 MT_H                = 2         # halfword
 MT_W                = 3         # word
@@ -240,7 +240,7 @@ EXC_DMEM_ERROR      = 2
 EXC_ILLEGAL_INST    = 4
 EXC_EBREAK          = 8
 
-EXC_MSG = {         EXC_IMEM_ERROR:     "imem access error", 
+EXC_MSG = {         EXC_IMEM_ERROR:     "imem access error",
                     EXC_DMEM_ERROR:     "dmem access error",
                     EXC_ILLEGAL_INST:   "illegal instruction",
                     EXC_EBREAK:         "ebreak",
@@ -253,5 +253,3 @@ FWD_MM              = 2
 FWD_WB              = 3
 # For 3-stage
 FWD_MW              = 4
-
-

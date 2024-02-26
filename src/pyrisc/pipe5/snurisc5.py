@@ -50,7 +50,7 @@ class SNURISC5(object):
         stages = [ IF(), ID(), EX(), MM(), WB() ]
         self.ctl = Control()
         Pipe.set_stages(self, stages, self.ctl)
-       
+
         self.rf = RegisterFile()
         self.alu = ALU()
         self.imem = Memory(IMEM_START, IMEM_SIZE, WORD_SIZE)
@@ -142,4 +142,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-

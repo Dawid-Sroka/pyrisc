@@ -24,7 +24,7 @@ Among the 40 instructions defined in the RV32I base instruction set, __snurisc5_
 The following RV32I instructions are not supported in __snurisc5__:
 
 * `fence`: The `fence` instruction is used to order device I/O and memory accesses.
-* `ecall`: The `ecall` instruction is originally used to make a service request to the execution environment. 
+* `ecall`: The `ecall` instruction is originally used to make a service request to the execution environment.
 
 ### Unimplemented Instructions
 
@@ -177,14 +177,14 @@ Loading file ../asm/loaduse
 Execution completed
 Registers
 =========
-zero ($0): 0x00000000    ra ($1):   0x00000000    sp ($2):   0x00000000    gp ($3):   0x00000000    
-tp ($4):   0x00000000    t0 ($5):   0x80010000    t1 ($6):   0x00000000    t2 ($7):   0x00000000    
-s0 ($8):   0x00000000    s1 ($9):   0x00000000    a0 ($10):  0x00000000    a1 ($11):  0x00000000    
-a2 ($12):  0x00000000    a3 ($13):  0x00000000    a4 ($14):  0x00000000    a5 ($15):  0x00000000    
-a6 ($16):  0x00000000    a7 ($17):  0x00000000    s2 ($18):  0x00000000    s3 ($19):  0x00000000    
-s4 ($20):  0x00000000    s5 ($21):  0x00000000    s6 ($22):  0x00000000    s7 ($23):  0x00000000    
-s8 ($24):  0x00000000    s9 ($25):  0x00000000    s10 ($26): 0x00000000    s11 ($27): 0x00000000    
-t3 ($28):  0x00000000    t4 ($29):  0x00000000    t5 ($30):  0x00000000    t6 ($31):  0x00000001    
+zero ($0): 0x00000000    ra ($1):   0x00000000    sp ($2):   0x00000000    gp ($3):   0x00000000
+tp ($4):   0x00000000    t0 ($5):   0x80010000    t1 ($6):   0x00000000    t2 ($7):   0x00000000
+s0 ($8):   0x00000000    s1 ($9):   0x00000000    a0 ($10):  0x00000000    a1 ($11):  0x00000000
+a2 ($12):  0x00000000    a3 ($13):  0x00000000    a4 ($14):  0x00000000    a5 ($15):  0x00000000
+a6 ($16):  0x00000000    a7 ($17):  0x00000000    s2 ($18):  0x00000000    s3 ($19):  0x00000000
+s4 ($20):  0x00000000    s5 ($21):  0x00000000    s6 ($22):  0x00000000    s7 ($23):  0x00000000
+s8 ($24):  0x00000000    s9 ($25):  0x00000000    s10 ($26): 0x00000000    s11 ($27): 0x00000000
+t3 ($28):  0x00000000    t4 ($29):  0x00000000    t5 ($30):  0x00000000    t6 ($31):  0x00000001
 Memory 0x80010000 - 0x8001ffff
 ==============================
 0x80010000:  03 00 00 00  (0x00000003)

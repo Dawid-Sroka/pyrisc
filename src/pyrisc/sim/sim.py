@@ -39,12 +39,12 @@ class Sim(object):
         while True:
             # Execute a single instruction
             status = Sim.single_step()
-            
+
             Sim.cpu.clock.cycles += 1
             if (Sim.cpu.clock.cycles > Sim.cpu.clock.period):
                 Sim.cpu.clock.cycles = 0
                 ## Tutaj pewnie chcemy zwrócić coś
-                ## status = ?? 
+                ## status = ??
                 return EXC_CLOCK
 
             # Update stats
@@ -59,7 +59,7 @@ class Sim(object):
 
             if not status == EXC_NONE:
                 break
-      
+
         ## Może poniższe dwie sekcje należy zamienić miejscami?
         ## Wtedy na końcu możemy robić 'Handle exceptions' i zwracać różne wartości
 
@@ -114,14 +114,14 @@ class Sim(object):
 
         alu1        = rs1_data      if cs[IN_ALU1] == OP1_RS1    else \
                       pc            if cs[IN_ALU1] == OP1_PC     else \
-                      WORD(0)       
+                      WORD(0)
 
         alu2        = rs2_data      if cs[IN_ALU2] == OP2_RS2    else \
                       imm_i         if cs[IN_ALU2] == OP2_IMI    else \
                       imm_u         if cs[IN_ALU2] == OP2_IMU    else \
                       WORD(0)
 
-        
+
         alu_out     = WORD(alu1 + alu2)                     if (cs[IN_OP] == ALU_ADD)           else \
                       WORD(alu1 - alu2)                     if (cs[IN_OP] == ALU_SUB)           else \
                       WORD(alu1 & alu2)                     if (cs[IN_OP] == ALU_AND)           else \
@@ -146,7 +146,7 @@ class Sim(object):
     def run_mem(pc, inst, opcode, cs):
 
         Stat.inst_mem += 1
-       
+
         rs1         = RISCV.rs1(inst)
         rs1_data    = Sim.cpu.regs.read(rs1)
 
@@ -158,7 +158,7 @@ class Sim(object):
             if dmem_ok:
                 Sim.cpu.regs.write(rd, mem_data)
         else:
-            rd          = 0                     
+            rd          = 0
             rs2         = RISCV.rs2(inst)
             rs2_data    = Sim.cpu.regs.read(rs2)
 
@@ -179,8 +179,8 @@ class Sim(object):
         Stat.inst_ctrl += 1
 
         if inst in [ EBREAK, ECALL ]:
-            Sim.log(pc, inst, 0, 0, 0) 
-            if (inst == EBREAK): 
+            Sim.log(pc, inst, 0, 0, 0)
+            if (inst == EBREAK):
                 return EXC_EBREAK
             else:
                 pc_next     = pc + 4
@@ -212,7 +212,7 @@ class Sim(object):
         if (opcode in [ JAL, JALR ]):
             Sim.cpu.regs.write(rd, pc_plus4)
         Sim.cpu.pc.write(pc_next)
-        Sim.log(pc, inst, rd, pc_plus4, pc_next) 
+        Sim.log(pc, inst, rd, pc_plus4, pc_next)
         return EXC_NONE
 
 
@@ -228,11 +228,10 @@ class Sim(object):
         if not imem_status:
             return EXC_IMEM_ERROR
 
-        # Instruction decode 
+        # Instruction decode
         opcode  = RISCV.opcode(inst)
         if opcode == ILLEGAL:
             return EXC_ILLEGAL_INST
 
         cs = isa[opcode]
         return Sim.func[cs[IN_CLASS]](pc, inst, opcode, cs)
-
