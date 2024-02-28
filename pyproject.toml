@@ -8,6 +8,7 @@ version = "0.0.1"
 authors = [
   { name="snu-csl, Dawid Sroka" },
 ]
+dependencies = ["numpy", "pyelftools"]
 description = "pyrisc adjusted for Kite floating kernel"
 readme = "README.md"
 requires-python = ">=3.8"
