@@ -154,7 +154,8 @@ class Sim(object):
             rd          = RISCV.rd(inst)
             imm_i       = RISCV.imm_i(inst)
             mem_addr    = rs1_data + SWORD(imm_i)
-            mem_data, dmem_ok = Sim.cpu.dmem.access(True, mem_addr, 0, M_XRD)
+            # mem_data, dmem_ok = Sim.cpu.dmem.access(True, mem_addr, 0, M_XRD)
+            mem_data, dmem_ok = Sim.cpu.page_table.access(True, mem_addr, 0, M_XRD)
             if dmem_ok:
                 Sim.cpu.regs.write(rd, mem_data)
         else:
@@ -164,7 +165,8 @@ class Sim(object):
 
             imm_s       = RISCV.imm_s(inst)
             mem_addr    = rs1_data + SWORD(imm_s)
-            mem_data, dmem_ok = Sim.cpu.dmem.access(True, mem_addr, rs2_data, M_XWR)
+            # mem_data, dmem_ok = Sim.cpu.dmem.access(True, mem_addr, rs2_data, M_XWR)
+            mem_data, dmem_ok = Sim.cpu.page_table.access(True, mem_addr, rs2_data, M_XWR)
 
         if not dmem_ok:
             return EXC_DMEM_ERROR
@@ -224,7 +226,8 @@ class Sim(object):
         pc      = Sim.cpu.pc.read()
 
         # Instruction fetch
-        inst, imem_status = Sim.cpu.imem.access(True, pc, 0, M_XRD)
+        # inst, imem_status = Sim.cpu.imem.access(True, pc, 0, M_XRD)
+        inst, imem_status = Sim.cpu.page_table.access(True, pc, 0, M_XRD)
         if not imem_status:
             return EXC_IMEM_ERROR
 

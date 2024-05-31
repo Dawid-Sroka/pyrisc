@@ -129,6 +129,47 @@ class Memory(object):
             if (not skipzero) or (val != 0):
                 print("0x%08x: " % a, ' '.join("%02x" % ((val >> i) & 0xff) for i in [0, 8, 16, 24]), " (0x%08x)" % val)
 
+
+VPO_LENTGH = 12
+PAGE_SIZE = 2 ** VPO_LENTGH
+
+class PageTableEntry:
+    def __init__(self, vpn):
+        self.vpn = vpn
+        words_in_page  = PAGE_SIZE // WORD_SIZE
+        self.physical_page     = WORD([0] * words_in_page)
+
+class PageTable:
+    def __init__(self):
+        self.table = {}
+
+    def access(self, valid, va, data, function):
+        if not valid:
+            return ( WORD(0), True )
+        vpn = va >> VPO_LENTGH
+        VPO_MASK = 2**VPO_LENTGH - 1
+        vpo = (va & VPO_MASK) // WORD_SIZE
+        if function == M_XRD:
+            # check permissions, validity etc
+            if vpn not in self.table.keys():
+                return ( WORD(0), False )
+            pte = self.table[vpn]
+            page = pte.physical_page
+            ppo = vpo
+            return ( page[ppo], True )
+        elif function == M_XWR:
+            # check permissions, validity etc
+            if vpn not in self.table.keys():
+                self.table[vpn] = PageTableEntry(vpn)
+            pte = self.table[vpn]
+            page = pte.physical_page
+            ppo = vpo
+            page[ppo] = data
+            return ( WORD(0), True )
+        else:
+            return ( WORD(0), False )
+
+
 #--------------------------------------------------------------------------
 #   Clock: models a cpu clock
 #--------------------------------------------------------------------------
