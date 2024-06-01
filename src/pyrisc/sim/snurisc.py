@@ -49,8 +49,8 @@ class SNURISC(object):
 
         self.pc     = Register()
         self.regs   = RegisterFile()
-        self.imem   = Memory(IMEM_START, IMEM_SIZE, WORD_SIZE)
-        self.dmem   = Memory(DMEM_START, DMEM_SIZE, WORD_SIZE)
+        # self.imem   = Memory(IMEM_START, IMEM_SIZE, WORD_SIZE)
+        # self.dmem   = Memory(DMEM_START, DMEM_SIZE, WORD_SIZE)
         self.page_table = PageTable()
         self.clock  = Clock() ## cpu clock
 
