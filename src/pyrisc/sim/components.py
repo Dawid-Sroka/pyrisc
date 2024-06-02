@@ -169,6 +169,12 @@ class PageTable:
         else:
             return ( WORD(0), False )
 
+    def get_byte(self, va: int):
+        word, _ = self.access(True, va, 0, M_XRD)
+        remainder = va % 4
+        byte = (word >> (remainder * 8)) & 0xFF
+        return byte
+
 
 #--------------------------------------------------------------------------
 #   Clock: models a cpu clock
