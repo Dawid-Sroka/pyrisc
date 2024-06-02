@@ -154,9 +154,28 @@ class Sim(object):
             rd          = RISCV.rd(inst)
             imm_i       = RISCV.imm_i(inst)
             mem_addr    = rs1_data + SWORD(imm_i)
+            funct3      = (inst & FUNCT3_MASK) >> FUNCT3_SHIFT
+            remainder   = mem_addr % WORD_SIZE
+            if (remainder != 0 and funct3 != 2):
+                mem_addr -= remainder
+
             # mem_data, dmem_ok = Sim.cpu.dmem.access(True, mem_addr, 0, M_XRD)
             mem_data, dmem_ok = Sim.cpu.page_table.access(True, mem_addr, 0, M_XRD)
             if dmem_ok:
+                if (funct3 == 0):                           # LB
+                    mem_data = (mem_data >> (remainder * 8)) & 0xFF
+                    sign = mem_data >> 7
+                    mem_data += ((0 - sign) << 8)
+                elif (funct3 == 4):                         # LBU
+                    mem_data = (mem_data >> (remainder * 8)) & 0xFF
+                elif (funct3 == 1):                         # LH
+                    mem_data = (mem_data >> (remainder * 8)) & 0xFFFF
+                    sign = mem_data >> 15
+                    mem_data += ((0 - sign) << 8)
+                elif (funct3 == 5):                         # LHU
+                    mem_data = (mem_data >> (remainder * 8)) & 0xFFFF
+                elif (funct3 != 2):
+                    return EXC_ILLEGAL_INST
                 Sim.cpu.regs.write(rd, mem_data)
         else:
             rd          = 0
@@ -166,10 +185,25 @@ class Sim(object):
             imm_s       = RISCV.imm_s(inst)
             mem_addr    = rs1_data + SWORD(imm_s)
             # mem_data, dmem_ok = Sim.cpu.dmem.access(True, mem_addr, rs2_data, M_XWR)
-            mem_data, dmem_ok = Sim.cpu.page_table.access(True, mem_addr, rs2_data, M_XWR)
 
-        if not dmem_ok:
-            return EXC_DMEM_ERROR
+
+            funct3      = (inst & FUNCT3_MASK) >> FUNCT3_SHIFT
+            remainder   = mem_addr % WORD_SIZE
+            if (remainder != 0 and funct3 != 2):
+                mem_addr -= remainder
+            if (funct3 == 0):                               # SB
+                rs2_data = rs2_data & 0xFF
+            # elif (funct3 == 1):                           # SH
+            #     rs2_data = rs2_data & 0xFFFF
+            rs2_data = rs2_data << (remainder * 8)
+            save_data, dmem_ok = Sim.cpu.page_table.access(True, mem_addr, 0, M_XRD)
+            mem_data = WORD(0)
+            if dmem_ok:
+                save_data = save_data & ((1 << (remainder * 8)) - 1)
+                rs2_data += save_data
+                mem_data, dmem_ok = Sim.cpu.page_table.access(True, mem_addr, rs2_data, M_XWR)
+            if not dmem_ok:
+                return EXC_DMEM_ERROR
 
         pc_next         = pc + 4
         Sim.cpu.pc.write(pc_next)
