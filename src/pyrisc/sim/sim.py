@@ -74,14 +74,12 @@ class Sim(object):
         ## Wtedy na końcu możemy robić 'Handle exceptions' i zwracać różne wartości
 
         # Handle exceptions, if any
-        if (status.type & EXC_DMEM_ERROR):
-            print("Exception '%s' occurred at 0x%08x -- Program terminated" % (EXC_MSG[EXC_DMEM_ERROR], Sim.cpu.pc.read()))
+        if (status.type & EXC_PAGE_FAULT):
+            print("Exception '%s' occurred at 0x%08x -- Program terminated" % (EXC_MSG[EXC_PAGE_FAULT], Sim.cpu.pc.read()))
         elif (status.type & EXC_EBREAK):
             print("Execution completed")
         elif (status.type & EXC_ILLEGAL_INST):
             print("Exception '%s' occurred at 0x%08x -- Program terminated" % (EXC_MSG[EXC_ILLEGAL_INST], Sim.cpu.pc.read()))
-        elif (status.type & EXC_IMEM_ERROR):
-            print("Exception '%s' occurred at 0x%08x -- Program terminated" % (EXC_MSG[EXC_IMEM_ERROR], Sim.cpu.pc.read()))
 
         # Show logs after finishing the program execution
         if Log.level > 0:
