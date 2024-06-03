@@ -169,6 +169,10 @@ class PageTable:
         else:
             return ( WORD(0), False )
 
+    def add_page_containing_addr(self, addr):
+        new_page_addr = addr >> VPO_LENTGH
+        self.table[new_page_addr] = PageTableEntry(new_page_addr)
+
     def get_byte(self, va: int):
         word, _ = self.access(True, va, 0, M_XRD)
         remainder = va % 4
