@@ -26,6 +26,16 @@ from pyrisc.sim.program import *
 #   Sim: simulates the CPU execution
 #--------------------------------------------------------------------------
 
+class Event:
+    def __init__(self, exception_type: int):
+        self.type = exception_type
+
+class MemEvent(Event):
+    def __init__(self, exception_type: int, fault_addr: int, fault_pc: int):
+        self.type = exception_type
+        self.fault_addr = fault_addr
+        self.fault_pc = fault_pc
+
 class Sim(object):
 
     @staticmethod
@@ -45,7 +55,7 @@ class Sim(object):
                 Sim.cpu.clock.cycles = 0
                 ## Tutaj pewnie chcemy zwrócić coś
                 ## status = ??
-                return EXC_CLOCK
+                return Event(EXC_CLOCK)
 
             # Update stats
             Stat.cycle      += 1
@@ -57,26 +67,27 @@ class Sim(object):
             if Log.level >= 6:
                 Sim.cpu.dmem.dump(skipzero = True)
 
-            if not status == EXC_NONE:
+            if status.type != EXC_NONE:
                 break
 
         ## Może poniższe dwie sekcje należy zamienić miejscami?
         ## Wtedy na końcu możemy robić 'Handle exceptions' i zwracać różne wartości
 
         # Handle exceptions, if any
-        if (status & EXC_DMEM_ERROR):
+        if (status.type & EXC_DMEM_ERROR):
             print("Exception '%s' occurred at 0x%08x -- Program terminated" % (EXC_MSG[EXC_DMEM_ERROR], Sim.cpu.pc.read()))
-        elif (status & EXC_EBREAK):
+        elif (status.type & EXC_EBREAK):
             print("Execution completed")
-        elif (status & EXC_ILLEGAL_INST):
+        elif (status.type & EXC_ILLEGAL_INST):
             print("Exception '%s' occurred at 0x%08x -- Program terminated" % (EXC_MSG[EXC_ILLEGAL_INST], Sim.cpu.pc.read()))
-        elif (status & EXC_IMEM_ERROR):
+        elif (status.type & EXC_IMEM_ERROR):
             print("Exception '%s' occurred at 0x%08x -- Program terminated" % (EXC_MSG[EXC_IMEM_ERROR], Sim.cpu.pc.read()))
 
         # Show logs after finishing the program execution
         if Log.level > 0:
             if Log.level < 5:
                 Sim.cpu.regs.dump()
+                print("pc =", hex(Sim.cpu.pc.read()))
             if Log.level > 1 and Log.level < 6:
                 Sim.cpu.dmem.dump(skipzero = True)
 
@@ -141,7 +152,7 @@ class Sim(object):
         Sim.cpu.regs.write(rd, alu_out)
         Sim.cpu.pc.write(pc_next)
         Sim.log(pc, inst, rd, alu_out, pc_next)
-        return EXC_NONE
+        return Event(EXC_NONE)
 
     def run_mem(pc, inst, opcode, cs):
 
@@ -175,8 +186,10 @@ class Sim(object):
                 elif (funct3 == 5):                         # LHU
                     mem_data = (mem_data >> (remainder * 8)) & 0xFFFF
                 elif (funct3 != 2):
-                    return EXC_ILLEGAL_INST
+                    return Event(EXC_ILLEGAL_INST)
                 Sim.cpu.regs.write(rd, mem_data)
+            if not dmem_ok:
+                return MemEvent(EXC_PAGE_FAULT, mem_addr, pc)
         else:
             rd          = 0
             rs2         = RISCV.rs2(inst)
@@ -203,12 +216,12 @@ class Sim(object):
                 rs2_data += save_data
                 mem_data, dmem_ok = Sim.cpu.page_table.access(True, mem_addr, rs2_data, M_XWR)
             if not dmem_ok:
-                return EXC_DMEM_ERROR
+                return MemEvent(EXC_PAGE_FAULT, mem_addr, pc)
 
         pc_next         = pc + 4
         Sim.cpu.pc.write(pc_next)
         Sim.log(pc, inst, rd, mem_data, pc_next)
-        return EXC_NONE
+        return Event(EXC_NONE)
 
     def run_ctrl(pc, inst, opcode, cs):
 
@@ -217,11 +230,11 @@ class Sim(object):
         if inst in [ EBREAK, ECALL ]:
             Sim.log(pc, inst, 0, 0, 0)
             if (inst == EBREAK):
-                return EXC_EBREAK
+                return Event(EXC_EBREAK)
             else:
                 pc_next     = pc + 4
                 Sim.cpu.pc.write(pc_next)
-                return EXC_ECALL
+                return Event(EXC_ECALL)
 
         rs1             = RISCV.rs1(inst)
         rs2             = RISCV.rs2(inst)
@@ -249,7 +262,7 @@ class Sim(object):
             Sim.cpu.regs.write(rd, pc_plus4)
         Sim.cpu.pc.write(pc_next)
         Sim.log(pc, inst, rd, pc_plus4, pc_next)
-        return EXC_NONE
+        return Event(EXC_NONE)
 
 
     func = [ run_alu, run_mem, run_ctrl ]
@@ -263,12 +276,12 @@ class Sim(object):
         # inst, imem_status = Sim.cpu.imem.access(True, pc, 0, M_XRD)
         inst, imem_status = Sim.cpu.page_table.access(True, pc, 0, M_XRD)
         if not imem_status:
-            return EXC_IMEM_ERROR
+            return MemEvent(EXC_PAGE_FAULT, mem_addr, pc)
 
         # Instruction decode
         opcode  = RISCV.opcode(inst)
         if opcode == ILLEGAL:
-            return EXC_ILLEGAL_INST
+            return Event(EXC_ILLEGAL_INST)
 
         cs = isa[opcode]
         return Sim.func[cs[IN_CLASS]](pc, inst, opcode, cs)
