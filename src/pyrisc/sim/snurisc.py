@@ -45,13 +45,11 @@ DMEM_SIZE   = WORD(64 * 1024)
 class SNURISC(object):
 
 
-    def __init__(self):
+    def __init__(self, vm: TranslatesAddresses):
 
         self.pc     = Register()
         self.regs   = RegisterFile()
-        # self.imem   = Memory(IMEM_START, IMEM_SIZE, WORD_SIZE)
-        # self.dmem   = Memory(DMEM_START, DMEM_SIZE, WORD_SIZE)
-        self.page_table = PageTable()
+        self.mmu    = MMU(vm)
         self.clock  = Clock() ## cpu clock
 
     def run(self, entry_point):
