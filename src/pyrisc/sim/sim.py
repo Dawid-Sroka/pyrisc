@@ -169,7 +169,7 @@ class Sim(object):
                 mem_addr -= remainder
 
             # mem_data, dmem_ok = Sim.cpu.dmem.access(True, mem_addr, 0, M_XRD)
-            mem_data, dmem_ok = Sim.cpu.page_table.access(True, mem_addr, 0, M_XRD)
+            mem_data, dmem_ok = Sim.cpu.mmu.mem_access(True, mem_addr, 0, M_XRD)
             if dmem_ok:
                 if (funct3 == 0):                           # LB
                     mem_data = (mem_data >> (remainder * 8)) & 0xFF
@@ -207,12 +207,12 @@ class Sim(object):
             # elif (funct3 == 1):                           # SH
             #     rs2_data = rs2_data & 0xFFFF
             rs2_data = rs2_data << (remainder * 8)
-            save_data, dmem_ok = Sim.cpu.page_table.access(True, mem_addr, 0, M_XRD)
+            save_data, dmem_ok = Sim.cpu.mmu.mem_access(True, mem_addr, 0, M_XRD)
             mem_data = WORD(0)
             if dmem_ok:
                 save_data = save_data & ((1 << (remainder * 8)) - 1)
                 rs2_data += save_data
-                mem_data, dmem_ok = Sim.cpu.page_table.access(True, mem_addr, rs2_data, M_XWR)
+                mem_data, dmem_ok = Sim.cpu.mmu.mem_access(True, mem_addr, rs2_data, M_XWR)
             if not dmem_ok:
                 return MemEvent(EXC_PAGE_FAULT, mem_addr, pc)
 
@@ -272,7 +272,7 @@ class Sim(object):
 
         # Instruction fetch
         # inst, imem_status = Sim.cpu.imem.access(True, pc, 0, M_XRD)
-        inst, imem_status = Sim.cpu.page_table.access(True, pc, 0, M_XRD)
+        inst, imem_status = Sim.cpu.mmu.mem_access(True, pc, 0, M_XRD)
         if not imem_status:
             return MemEvent(EXC_PAGE_FAULT, mem_addr, pc)
 
