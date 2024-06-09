@@ -17,6 +17,7 @@
 from pyrisc.sim.consts import *
 from pyrisc.sim.isa import *
 
+from abc import ABC, abstractmethod
 
 #--------------------------------------------------------------------------
 #   Constants
@@ -132,52 +133,60 @@ class Memory(object):
 
 VPO_LENTGH = 12
 PAGE_SIZE = 2 ** VPO_LENTGH
+VPO_MASK = 2**VPO_LENTGH - 1
+VPN_MASK = 2**32 - 1 - VPO_MASK
 
 class PageTableEntry:
     def __init__(self, vpn):
         self.vpn = vpn
+        self.protections = 1
         words_in_page  = PAGE_SIZE // WORD_SIZE
         self.physical_page     = WORD([0] * words_in_page)
+    
 
-class PageTable:
-    def __init__(self):
-        self.table = {}
+class TranslatesAddresses(ABC):
+    
+    @abstractmethod
+    # returns pte or None (when there is no such page)
+    def translate(self, vpn: int) -> PageTableEntry | None:
+        raise NotImplementedError
 
-    def access(self, valid, va, data, function):
-        if not valid:
-            return ( WORD(0), True )
+
+class MMU():
+    def __init__(self, translates_addresses: TranslatesAddresses):
+        self.page_table = translates_addresses
+
+    def mem_access(self, valid, va, data, function):
+        # if not valid:
+        #     return ( WORD(0), True )
         vpn = va >> VPO_LENTGH
-        VPO_MASK = 2**VPO_LENTGH - 1
         vpo = (va & VPO_MASK) // WORD_SIZE
-        if function == M_XRD:
-            # check permissions, validity etc
-            if vpn not in self.table.keys():
-                return ( WORD(0), False )
-            pte = self.table[vpn]
-            page = pte.physical_page
-            ppo = vpo
-            return ( page[ppo], True )
+        pte = self.page_table.translate(vpn)
+        if pte == None:
+            # there's no such page in pt
+            # kernel must do something
+            return ( WORD(0), False )
+        elif function == M_XRD:
+            # check pte permissions, validity etc
+            if pte.protections:
+                page = pte.physical_page
+                ppo = vpo
+                return ( page[ppo], True )
+            else:
+                # fault
+                raise NotImplementedError
         elif function == M_XWR:
             # check permissions, validity etc
-            if vpn not in self.table.keys():
-                self.table[vpn] = PageTableEntry(vpn)
-            pte = self.table[vpn]
-            page = pte.physical_page
-            ppo = vpo
-            page[ppo] = data
-            return ( WORD(0), True )
+            if pte.protections:
+                page = pte.physical_page
+                ppo = vpo
+                page[ppo] = data
+                return ( WORD(0), True )
+            else:
+                # fault
+                raise NotImplementedError
         else:
             return ( WORD(0), False )
-
-    def add_page_containing_addr(self, addr):
-        new_page_addr = addr >> VPO_LENTGH
-        self.table[new_page_addr] = PageTableEntry(new_page_addr)
-
-    def get_byte(self, va: int):
-        word, _ = self.access(True, va, 0, M_XRD)
-        remainder = va % 4
-        byte = (word >> (remainder * 8)) & 0xFF
-        return byte
 
 
 #--------------------------------------------------------------------------
