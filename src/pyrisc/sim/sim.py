@@ -26,13 +26,13 @@ from pyrisc.sim.program import *
 #   Sim: simulates the CPU execution
 #--------------------------------------------------------------------------
 
-class Event:
+class Event(ABC):
     def __init__(self, exception_type: int):
         self.type = exception_type
 
 class MemEvent(Event):
     def __init__(self, exception_type: int, fault_addr: int, fault_pc: int):
-        self.type = exception_type
+        super().__init__(exception_type)
         self.fault_addr = fault_addr
         self.fault_pc = fault_pc
 
