@@ -169,8 +169,8 @@ class Sim(object):
                 mem_addr -= remainder
 
             # mem_data, dmem_ok = Sim.cpu.dmem.access(True, mem_addr, 0, M_XRD)
-            mem_data, dmem_ok = Sim.cpu.mmu.mem_access(True, mem_addr, 0, M_XRD)
-            if dmem_ok:
+            mem_data, mem_status = Sim.cpu.mmu.mem_access(True, mem_addr, 0, M_XRD)
+            if mem_status:
                 if (funct3 == 0):                           # LB
                     mem_data = (mem_data >> (remainder * 8)) & 0xFF
                     sign = mem_data >> 7
@@ -186,8 +186,8 @@ class Sim(object):
                 elif (funct3 != 2):
                     return Event(EXC_ILLEGAL_INST)
                 Sim.cpu.regs.write(rd, mem_data)
-            if not dmem_ok:
-                return MemEvent(EXC_PAGE_FAULT, mem_addr, pc)
+            if mem_status != EXC_NONE:
+                return MemEvent(mem_status, mem_addr, pc)
         else:
             rd          = 0
             rs2         = RISCV.rs2(inst)
@@ -207,14 +207,14 @@ class Sim(object):
             # elif (funct3 == 1):                           # SH
             #     rs2_data = rs2_data & 0xFFFF
             rs2_data = rs2_data << (remainder * 8)
-            save_data, dmem_ok = Sim.cpu.mmu.mem_access(True, mem_addr, 0, M_XRD)
+            save_data, mem_status = Sim.cpu.mmu.mem_access(True, mem_addr, 0, M_XRD)
             mem_data = WORD(0)
-            if dmem_ok:
+            if mem_status:
                 save_data = save_data & ((1 << (remainder * 8)) - 1)
                 rs2_data += save_data
-                mem_data, dmem_ok = Sim.cpu.mmu.mem_access(True, mem_addr, rs2_data, M_XWR)
-            if not dmem_ok:
-                return MemEvent(EXC_PAGE_FAULT, mem_addr, pc)
+                mem_data, mem_status = Sim.cpu.mmu.mem_access(True, mem_addr, rs2_data, M_XWR)
+            if mem_status != EXC_NONE:
+                return MemEvent(mem_status, mem_addr, pc)
 
         pc_next         = pc + 4
         Sim.cpu.pc.write(pc_next)
@@ -272,9 +272,9 @@ class Sim(object):
 
         # Instruction fetch
         # inst, imem_status = Sim.cpu.imem.access(True, pc, 0, M_XRD)
-        inst, imem_status = Sim.cpu.mmu.mem_access(True, pc, 0, M_XRD)
-        if not imem_status:
-            return MemEvent(EXC_PAGE_FAULT, mem_addr, pc)
+        inst, mem_status = Sim.cpu.mmu.mem_access(True, pc, 0, M_XRD)
+        if mem_status != EXC_NONE:
+            return MemEvent(mem_status, pc, pc)
 
         # Instruction decode
         opcode  = RISCV.opcode(inst)
