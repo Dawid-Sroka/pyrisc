@@ -156,7 +156,13 @@ class MMU():
     def __init__(self, translates_addresses: TranslatesAddresses):
         self.page_table = translates_addresses
 
-    def mem_access(self, valid, va, data, function):
+    # def mem_store(self, va, data) -> (WORD, int):
+    #     NotImplementedError
+
+    # def mem_load(self,va) -> (WORD, int):
+    #     NotImplementedError
+
+    def mem_access(self, valid, va, data, function) -> (WORD, int):
         # if not valid:
         #     return ( WORD(0), True )
         vpn = va >> VPO_LENTGH
@@ -165,28 +171,28 @@ class MMU():
         if pte == None:
             # there's no such page in pt
             # kernel must do something
-            return ( WORD(0), False )
+            return ( WORD(0), EXC_PAGE_FAULT_MISS )
         elif function == M_XRD:
             # check pte permissions, validity etc
             if pte.protections:
                 page = pte.physical_page
                 ppo = vpo
-                return ( page[ppo], True )
+                return ( page[ppo], EXC_NONE )
             else:
                 # fault
-                raise NotImplementedError
+                return ( WORD(0), EXC_PAGE_FAULT_PERMS )
         elif function == M_XWR:
             # check permissions, validity etc
             if pte.protections:
                 page = pte.physical_page
                 ppo = vpo
                 page[ppo] = data
-                return ( WORD(0), True )
+                return ( WORD(0), EXC_NONE )
             else:
                 # fault
-                raise NotImplementedError
+                return ( WORD(0), EXC_PAGE_FAULT_PERMS )
         else:
-            return ( WORD(0), False )
+            return ( WORD(0), EXC_ILLEGAL_INST )
 
 
 #--------------------------------------------------------------------------
