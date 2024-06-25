@@ -57,6 +57,10 @@ FUNCT7_SHIFT        = 25
 M_XRD               = 0
 M_XWR               = 1
 
+# Memory access protections
+
+M_READ_ONLY         = 0
+M_READ_WRITE        = 1
 
 #--------------------------------------------------------------------------
 #   ISA table index
