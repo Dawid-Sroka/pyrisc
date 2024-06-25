@@ -40,7 +40,7 @@ class Sim(object):
 
     @staticmethod
     # ta procedura będzie przyjmować ca
-    def run(cpu, entry_point):
+    def run(cpu, entry_point) -> Event:
 
         Sim.cpu = cpu # ta linijka potrzebna?
         Sim.cpu.pc.write(entry_point)
@@ -106,7 +106,7 @@ class Sim(object):
         else:
             return
 
-    def run_alu(pc, inst, opcode, cs):
+    def run_alu(pc, inst, opcode, cs) -> Event:
         np.seterr(all='ignore')
 
         Stat.inst_alu += 1
@@ -152,7 +152,7 @@ class Sim(object):
         Sim.log(pc, inst, rd, alu_out, pc_next)
         return Event(EXC_NONE)
 
-    def run_mem(pc, inst, opcode, cs):
+    def run_mem(pc, inst, opcode, cs) -> Event:
 
         Stat.inst_mem += 1
 
@@ -221,7 +221,7 @@ class Sim(object):
         Sim.log(pc, inst, rd, mem_data, pc_next)
         return Event(EXC_NONE)
 
-    def run_ctrl(pc, inst, opcode, cs):
+    def run_ctrl(pc, inst, opcode, cs) -> Event:
 
         Stat.inst_ctrl += 1
 
@@ -266,7 +266,7 @@ class Sim(object):
     func = [ run_alu, run_mem, run_ctrl ]
 
     @staticmethod
-    def single_step():
+    def single_step() -> Event:
 
         pc      = Sim.cpu.pc.read()
 

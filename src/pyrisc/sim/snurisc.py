@@ -52,7 +52,7 @@ class SNURISC(object):
         self.mmu    = MMU(vm)
         self.clock  = Clock() ## cpu clock
 
-    def run(self, entry_point):
+    def run(self, entry_point) -> Event:
         return Sim.run(self, entry_point)
 
 
