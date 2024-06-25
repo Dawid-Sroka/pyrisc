@@ -137,9 +137,9 @@ VPO_MASK = 2**VPO_LENTGH - 1
 VPN_MASK = 2**32 - 1 - VPO_MASK
 
 class PageTableEntry:
-    def __init__(self, vpn):
+    def __init__(self, vpn, prot):
         self.vpn = vpn
-        self.protections = 1
+        self.perms = prot
         words_in_page  = PAGE_SIZE // WORD_SIZE
         self.physical_page     = WORD([0] * words_in_page)
     
@@ -174,7 +174,7 @@ class MMU():
             return ( WORD(0), EXC_PAGE_FAULT_MISS )
         elif function == M_XRD:
             # check pte permissions, validity etc
-            if pte.protections:
+            if pte.perms == M_READ_ONLY or pte.perms == M_READ_WRITE:
                 page = pte.physical_page
                 ppo = vpo
                 return ( page[ppo], EXC_NONE )
@@ -183,7 +183,7 @@ class MMU():
                 return ( WORD(0), EXC_PAGE_FAULT_PERMS )
         elif function == M_XWR:
             # check permissions, validity etc
-            if pte.protections:
+            if pte.perms == M_READ_WRITE:
                 page = pte.physical_page
                 ppo = vpo
                 page[ppo] = data
