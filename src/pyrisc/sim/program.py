@@ -185,7 +185,7 @@ class Log(object):
 
     MAX_LOG_LEVEL   = 6
 
-    level           = 1
+    level           = 0
     start_cycle     = 0
 
 
