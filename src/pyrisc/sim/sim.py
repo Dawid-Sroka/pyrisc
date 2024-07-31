@@ -170,7 +170,7 @@ class Sim(object):
 
             # mem_data, dmem_ok = Sim.cpu.dmem.access(True, mem_addr, 0, M_XRD)
             mem_data, mem_status = Sim.cpu.mmu.mem_access(True, mem_addr, 0, M_XRD)
-            if mem_status:
+            if mem_status == EXC_NONE:
                 if (funct3 == 0):                           # LB
                     mem_data = (mem_data >> (remainder * 8)) & 0xFF
                     sign = mem_data >> 7
@@ -209,7 +209,7 @@ class Sim(object):
             rs2_data = rs2_data << (remainder * 8)
             save_data, mem_status = Sim.cpu.mmu.mem_access(True, mem_addr, 0, M_XRD)
             mem_data = WORD(0)
-            if mem_status:
+            if mem_status == EXC_NONE:
                 save_data = save_data & ((1 << (remainder * 8)) - 1)
                 rs2_data += save_data
                 mem_data, mem_status = Sim.cpu.mmu.mem_access(True, mem_addr, rs2_data, M_XWR)
