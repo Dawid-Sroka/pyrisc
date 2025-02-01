@@ -140,8 +140,7 @@ class PageTableEntry:
     def __init__(self, vpn, prot):
         self.vpn = vpn
         self.perms = prot
-        words_in_page  = PAGE_SIZE // WORD_SIZE
-        self.physical_page     = WORD([0] * words_in_page)
+        self.physical_page     = bytes(PAGE_SIZE)
     
 
 class TranslatesAddresses(ABC):
@@ -166,7 +165,7 @@ class MMU():
         # if not valid:
         #     return ( WORD(0), True )
         vpn = va >> VPO_LENTGH
-        vpo = (va & VPO_MASK) // WORD_SIZE
+        vpo = (va & VPO_MASK)
         pte = self.page_table.translate(vpn)
         if pte == None:
             # there's no such page in pt
@@ -177,7 +176,8 @@ class MMU():
             if pte.perms == M_READ_ONLY or pte.perms == M_READ_WRITE:
                 page = pte.physical_page
                 ppo = vpo
-                return ( page[ppo], EXC_NONE )
+                word_value = int.from_bytes(page[ppo:ppo+WORD_SIZE], "little")
+                return ( WORD(word_value), EXC_NONE )
             else:
                 # fault
                 return ( WORD(0), EXC_PAGE_FAULT_PERMS )
@@ -186,7 +186,8 @@ class MMU():
             if pte.perms == M_READ_WRITE:
                 page = pte.physical_page
                 ppo = vpo
-                page[ppo] = data
+                word_as_bytes = int(data).to_bytes(WORD_SIZE, "little")
+                page[ppo:ppo+WORD_SIZE] = word_as_bytes
                 return ( WORD(0), EXC_NONE )
             else:
                 # fault
